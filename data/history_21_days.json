@@ -1,0 +1,23 @@
+[
+  {"day": "Día 1 (12 Oct)", "mattr": 0.76, "mean_pause": 1.05, "anomic_pauses": 0, "repetitions": 0, "mood": "Alegre"},
+  {"day": "Día 2 (13 Oct)", "mattr": 0.75, "mean_pause": 1.12, "anomic_pauses": 0, "repetitions": 0, "mood": "Tranquilo"},
+  {"day": "Día 3 (14 Oct)", "mattr": 0.78, "mean_pause": 0.98, "anomic_pauses": 0, "repetitions": 0, "mood": "Alegre"},
+  {"day": "Día 4 (15 Oct)", "mattr": 0.74, "mean_pause": 1.15, "anomic_pauses": 1, "repetitions": 0, "mood": "Nostálgico"},
+  {"day": "Día 5 (16 Oct)", "mattr": 0.77, "mean_pause": 1.08, "anomic_pauses": 0, "repetitions": 0, "mood": "Alegre"},
+  {"day": "Día 6 (17 Oct)", "mattr": 0.75, "mean_pause": 1.10, "anomic_pauses": 0, "repetitions": 0, "mood": "Tranquilo"},
+  {"day": "Día 7 (18 Oct)", "mattr": 0.76, "mean_pause": 1.04, "anomic_pauses": 0, "repetitions": 0, "mood": "Alegre"},
+  {"day": "Día 8 (19 Oct)", "mattr": 0.73, "mean_pause": 1.18, "anomic_pauses": 1, "repetitions": 0, "mood": "Tranquilo"},
+  {"day": "Día 9 (20 Oct)", "mattr": 0.76, "mean_pause": 1.09, "anomic_pauses": 0, "repetitions": 0, "mood": "Alegre"},
+  {"day": "Día 10 (21 Oct)", "mattr": 0.75, "mean_pause": 1.11, "anomic_pauses": 0, "repetitions": 0, "mood": "Tranquilo"},
+  {"day": "Día 11 (22 Oct)", "mattr": 0.74, "mean_pause": 1.14, "anomic_pauses": 0, "repetitions": 0, "mood": "Nostálgico"},
+  {"day": "Día 12 (23 Oct)", "mattr": 0.77, "mean_pause": 1.02, "anomic_pauses": 0, "repetitions": 0, "mood": "Alegre"},
+  {"day": "Día 13 (24 Oct)", "mattr": 0.75, "mean_pause": 1.16, "anomic_pauses": 1, "repetitions": 0, "mood": "Tranquilo"},
+  {"day": "Día 14 (25 Oct)", "mattr": 0.74, "mean_pause": 1.19, "anomic_pauses": 1, "repetitions": 0, "mood": "Tranquilo"},
+  {"day": "Día 15 (26 Oct)", "mattr": 0.72, "mean_pause": 1.25, "anomic_pauses": 1, "repetitions": 0, "mood": "Nostálgico"},
+  {"day": "Día 16 (27 Oct)", "mattr": 0.70, "mean_pause": 1.48, "anomic_pauses": 2, "repetitions": 0, "mood": "Tranquilo"},
+  {"day": "Día 17 (28 Oct)", "mattr": 0.65, "mean_pause": 1.95, "anomic_pauses": 3, "repetitions": 1, "mood": "Pensativo"},
+  {"day": "Día 18 (29 Oct)", "mattr": 0.62, "mean_pause": 2.30, "anomic_pauses": 4, "repetitions": 1, "mood": "Cansado"},
+  {"day": "Día 19 (30 Oct)", "mattr": 0.59, "mean_pause": 2.65, "anomic_pauses": 5, "repetitions": 2, "mood": "Frustrado"},
+  {"day": "Día 20 (31 Oct)", "mattr": 0.57, "mean_pause": 2.88, "anomic_pauses": 5, "repetitions": 2, "mood": "Nostálgico"},
+  {"day": "Día 21 (01 Nov)", "mattr": 0.55, "mean_pause": 3.12, "anomic_pauses": 6, "repetitions": 3, "mood": "Alerta Preventiva"}
+]

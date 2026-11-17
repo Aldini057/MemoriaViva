@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  memoriaviva:
+    build: .
+    container_name: memoriaviva_rise
+    ports:
+      - "8501:8501"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped

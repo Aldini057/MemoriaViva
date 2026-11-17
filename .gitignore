@@ -1,0 +1,27 @@
+# Entorno virtual y Python
+.venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Variables de entorno, credenciales y configuración local de cuenta/equipo
+.env
+data/account_config.json
+data/photos/
+data/profiles/*
+!data/profiles/don_manuel_simulacion.json
+
+# Binarios y compilaciones locales
+*.exe
+_pyinstaller_build/
+launcher_desktop.py
+
+# Archivos temporales de audio efímero (Zero-Raw-Cloud Audio)
+temp_*.wav
+temp_*.mp3
+
+# Reportes generados y caches
+*.pdf
+.pytest_cache/
