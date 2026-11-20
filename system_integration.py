@@ -268,11 +268,24 @@ def delete_profile_photo(profile_id: str, filename: str) -> bool:
 
 
 def _get_font(size: int, italic: bool = False) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
-    """Carga tipografía legible en Windows con fallback seguro."""
+    """Carga tipografía legible en Linux y Windows con fallback seguro."""
     candidates = (
-        [r"C:\Windows\Fonts\georgiai.ttf", r"C:\Windows\Fonts\ariali.ttf"]
+        [
+            "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Italic.ttf",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Oblique.ttf",
+            "/usr/share/fonts/truetype/liberation/LiberationSerif-Italic.ttf",
+            r"C:\Windows\Fonts\georgiai.ttf",
+            r"C:\Windows\Fonts\ariali.ttf",
+        ]
         if italic
-        else [r"C:\Windows\Fonts\georgiab.ttf", r"C:\Windows\Fonts\segoeuib.ttf", r"C:\Windows\Fonts\arialbd.ttf"]
+        else [
+            "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+            "/usr/share/fonts/truetype/liberation/LiberationSerif-Bold.ttf",
+            r"C:\Windows\Fonts\georgiab.ttf",
+            r"C:\Windows\Fonts\segoeuib.ttf",
+            r"C:\Windows\Fonts\arialbd.ttf",
+        ]
     )
     for font_path in candidates:
         if os.path.exists(font_path):

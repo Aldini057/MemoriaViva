@@ -1,0 +1,19 @@
+{
+  "name": "memoriaviva-rise-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Empaquetador Capacitor Android para MemoriaViva RISE",
+  "scripts": {
+    "android:init": "npx cap add android && node scripts/configure-android.mjs && npx cap sync android",
+    "android:sync": "node scripts/configure-android.mjs && npx cap sync android",
+    "android:debug": "cd android && ./gradlew assembleDebug",
+    "android:release": "cd android && ./gradlew assembleRelease"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/core": "^6.1.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.2"
+  }
+}

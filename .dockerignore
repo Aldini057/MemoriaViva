@@ -1,0 +1,13 @@
+.git
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.env
+dist
+build
+*.exe
+*.spec
+temp_*.wav
+temp_*.mp3

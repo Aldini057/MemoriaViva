@@ -1,0 +1,104 @@
+name: Build Android APK (MemoriaViva RISE)
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      server_url:
+        description: "URL HTTPS del servidor MemoriaViva (opcional; por defecto usa vars.APP_SERVER_URL)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build-android-apk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+
+    env:
+      APP_SERVER_URL: ${{ github.event.inputs.server_url || vars.APP_SERVER_URL || '' }}
+
+    steps:
+      - name: Checkout repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Configurar Java 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Configurar Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Instalar dependencias de Capacitor
+        run: npm install
+
+      - name: Generar y configurar proyecto Android
+        run: |
+          if [ ! -d "android" ]; then
+            npx cap add android
+          fi
+          node scripts/configure-android.mjs
+          npx cap sync android
+          chmod +x android/gradlew
+
+      - name: Compilar APK Debug
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        run: |
+          cd android
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Subir APK Debug como Artifact
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: MemoriaViva-RISE-debug-apk
+          path: mobile/android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 14
+
+      - name: Compilar APK Release firmado (Tag v*)
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASS: ${{ secrets.ANDROID_KEY_PASS }}
+        run: |
+          if [ -z "$ANDROID_KEYSTORE_BASE64" ]; then
+            echo "::error::Falta el secret ANDROID_KEYSTORE_BASE64 para firmar el APK Release."
+            exit 1
+          fi
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/memoriaviva-release.keystore"
+          export ANDROID_KEYSTORE_PATH="$RUNNER_TEMP/memoriaviva-release.keystore"
+          cd android
+          ./gradlew assembleRelease --no-daemon
+
+      - name: Subir APK Release como Artifact
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: MemoriaViva-RISE-release-apk-${{ github.ref_name }}
+          path: mobile/android/app/build/outputs/apk/release/app-release.apk
+          retention-days: 30
+
+      - name: Publicar APK Release en GitHub Releases
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            mobile/android/app/build/outputs/apk/release/app-release.apk

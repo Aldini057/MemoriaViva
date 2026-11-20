@@ -1,7 +1,7 @@
-# 🌿 MemoriaViva RISE
+# MemoriaViva RISE
 
 **Plataforma Conversacional de Terapia de Reminiscencia y Detección Temprana No Invasiva de Deterioro Cognitivo Leve para Adultos Mayores**  
-*Global RISE AI Hackathon 2026 — University of Notre Dame (Lucy Family Institute for Data & Society), Universidad de Guadalajara, Universidad de Colima*
+*Global RISE AI Hackathon 2026 — University of Notre Dame (Lucy Family Institute for Data & Society), Universidad de Guadalajara*
 
 ---
 

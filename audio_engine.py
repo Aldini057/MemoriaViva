@@ -24,6 +24,7 @@ import base64
 import io
 import json
 import os
+import subprocess
 import threading
 import time
 import wave
@@ -836,18 +837,17 @@ class SpacebarPTTState:
             except Exception:
                 speech_dur = 0.0
 
-        # Respaldo opcional si el navegador envió bytes WAV en base64
+        # Respaldo / captura remota si el navegador o APK Android envió audio en base64 (WAV, WebM/Opus, MP4)
         if (not wav_bytes or speech_dur < 0.3) and browser_audio_b64:
-            try:
-                raw_b64 = browser_audio_b64.split(",")[-1]
-                decoded = base64.b64decode(raw_b64)
-                if decoded[:4] == b"RIFF":
-                    wav_bytes = decoded
+            decoded_wav = _decode_client_audio_to_wav(browser_audio_b64)
+            if decoded_wav:
+                try:
+                    wav_bytes = decoded_wav
                     ac = extract_acoustic_pauses_from_waveform(wav_bytes)
                     speech_dur = float(ac.get("speech_duration_sec", 0.0))
                     duration_sec = float(ac.get("total_duration_sec", duration_sec))
-            except Exception:
-                pass
+                except Exception:
+                    pass
 
         clean_b_transcript = (browser_transcript or "").strip()
         clean_b_ts = list(browser_word_timestamps) if isinstance(browser_word_timestamps, list) else []
@@ -915,6 +915,50 @@ class SpacebarPTTState:
         }
 
 
+def _decode_client_audio_to_wav(browser_audio_b64: str) -> bytes:
+    """
+    Decodifica audio base64 capturado en navegador o Android WebView (WAV, WebM/Opus, OGG, MP4)
+    y lo normaliza en memoria RAM a WAV PCM 16kHz mono sin escribir archivos a disco (Zero-Raw-Cloud).
+    """
+    try:
+        raw_b64 = browser_audio_b64.split(",")[-1].strip()
+        if not raw_b64:
+            return b""
+        decoded = base64.b64decode(raw_b64)
+        if not decoded:
+            return b""
+        if decoded[:4] == b"RIFF":
+            return decoded
+
+        proc = subprocess.run(
+            [
+                "ffmpeg",
+                "-hide_banner",
+                "-loglevel",
+                "error",
+                "-i",
+                "pipe:0",
+                "-ar",
+                "16000",
+                "-ac",
+                "1",
+                "-f",
+                "wav",
+                "pipe:1",
+            ],
+            input=decoded,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            timeout=10,
+            check=False,
+        )
+        if proc.returncode == 0 and proc.stdout[:4] == b"RIFF":
+            return proc.stdout
+    except Exception:
+        pass
+    return b""
+
+
 PTT_MANAGER = SpacebarPTTState()
 _PTT_SERVER_LOCK = threading.Lock()
 _PTT_SERVER_STARTED = False
@@ -952,7 +996,7 @@ class _PTTHandler(BaseHTTPRequestHandler):
         if self.path.startswith("/ptt/start"):
             res = PTT_MANAGER.start()
             self._send_json(200, res)
-        elif self.path.startswith("/ptt/stop"):
+        elif self.path.startswith("/ptt/stop") or self.path.startswith("/ptt/upload"):
             browser_b64 = None
             browser_transcript = None
             browser_ts = None
@@ -979,18 +1023,20 @@ class _PTTHandler(BaseHTTPRequestHandler):
 
 def start_ptt_background_server() -> int:
     """
-    Inicia una sola vez el micro-servidor local Push-to-Talk en 127.0.0.1
-    probando los puertos 8765..8775. Devuelve el puerto activo.
+    Inicia una sola vez el micro-servidor Push-to-Talk (por defecto en 0.0.0.0
+    para compatibilidad con Docker y acceso local) probando los puertos 8765..8775.
+    Devuelve el puerto activo.
     """
     global _PTT_SERVER_STARTED, ACTIVE_PTT_PORT
 
+    bind_host = os.getenv("PTT_BIND_HOST", "0.0.0.0")
     with _PTT_SERVER_LOCK:
         if _PTT_SERVER_STARTED:
             return ACTIVE_PTT_PORT
 
         for port in range(config.PTT_SERVER_PORT, config.PTT_SERVER_PORT + 11):
             try:
-                server = ThreadingHTTPServer(("127.0.0.1", port), _PTTHandler)
+                server = ThreadingHTTPServer((bind_host, port), _PTTHandler)
                 ACTIVE_PTT_PORT = port
                 _PTT_SERVER_STARTED = True
                 threading.Thread(target=server.serve_forever, daemon=True).start()
